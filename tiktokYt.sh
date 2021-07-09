@@ -1,6 +1,6 @@
 #!/bin/bash
 
-youtube-dl $(curl -s -H "User-agent: 'your bot 0.1'" "https://www.reddit.com/r/TikTokCringe/hot.json?limit=2" | jq '.' | grep url_overridden_by_dest | grep -Eoh "https:\/\/v\.redd\.it\/\w{13}") 
+youtube-dl $(curl -s -H "User-agent: 'your bot 0.1'" "https://www.reddit.com/r/TikTokCringe/hot.json?limit=12" | jq '.' | grep url_overridden_by_dest | grep -Eoh "https:\/\/v\.redd\.it\/\w{13}") 
 
 mkdir blur
 for f in *.mp4;
