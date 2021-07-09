@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import httplib
+import http.client
 import httplib2
 import os
 import random
@@ -23,10 +23,10 @@ httplib2.RETRIES = 1
 MAX_RETRIES = 10
 
 # Always retry when these exceptions are raised.
-RETRIABLE_EXCEPTIONS = (httplib2.HttpLib2Error, IOError, httplib.NotConnected,
-  httplib.IncompleteRead, httplib.ImproperConnectionState,
-  httplib.CannotSendRequest, httplib.CannotSendHeader,
-  httplib.ResponseNotReady, httplib.BadStatusLine)
+RETRIABLE_EXCEPTIONS = (httplib2.HttpLib2Error, IOError, http.client.NotConnected,
+  http.client.IncompleteRead, http.client.ImproperConnectionState,
+  http.client.CannotSendRequest, http.client.CannotSendHeader,
+  http.client.ResponseNotReady, http.client.BadStatusLine)
 
 # Always retry when an apiclient.errors.HttpError with one of these status
 # codes is raised.
@@ -104,7 +104,7 @@ def initialize_upload(youtube, options):
 
   # Call the API's videos.insert method to create and upload the video.
   insert_request = youtube.videos().insert(
-    part=",".join(body.keys()),
+    part=",".join(list(body.keys())),
     body=body,
     # The chunksize parameter specifies the size of each chunk of data, in
     # bytes, that will be uploaded at a time. Set a higher value for
@@ -134,7 +134,7 @@ def resumable_upload(insert_request):
       status, response = insert_request.next_chunk()
       if response is not None:
         if 'id' in response:
-          print ("Video id '%s' was successfully uploaded." % response['id'])
+          print(("Video id '%s' was successfully uploaded." % response['id']))
         else:
           exit("The upload failed with an unexpected response: %s" % response)
     except (HttpError, e):
@@ -154,7 +154,7 @@ def resumable_upload(insert_request):
 
       max_sleep = 2 ** retry
       sleep_seconds = random.random() * max_sleep
-      print ("Sleeping %f seconds and then retrying..." % sleep_seconds)
+      print(("Sleeping %f seconds and then retrying..." % sleep_seconds))
       time.sleep(sleep_seconds)
 
 if __name__ == '__main__':
@@ -178,4 +178,4 @@ if __name__ == '__main__':
   try:
     initialize_upload(youtube, args)
   except (HttpError, e):
-    print ("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
+    print(("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content)))
