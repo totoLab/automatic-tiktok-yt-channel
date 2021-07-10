@@ -1,8 +1,0 @@
-# Quickstart
-https://developers.google.com/youtube/v3/quickstart/python
-
-# Code snippet - uses python2
-#!TODO migrate to python3
-https://developers.google.com/youtube/v3/guides/uploading_a_video
-
-Create channel, implement rule for titles, add cronjob
