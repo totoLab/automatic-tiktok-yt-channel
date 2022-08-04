@@ -3,5 +3,5 @@ python3 upload_video.py --file="$1" \
                         --title="$titleDescr" \
                         --description="$titleDescr" \
                         --keywords="tiktok,reddit,videos,funny" \
-                        --category="" \
+                        --category="24" \ # 24: entertainment
                         --privacyStatus="public"
