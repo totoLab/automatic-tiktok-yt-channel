@@ -1,6 +1,8 @@
 # Automatic TikTok YT channel
 
-## [Google guide](https://developers.google.com/youtube/v3/guides/uploading_a_video) - [YT Tutorial](https://youtu.be/N5jMX6erNeo)
+## Based on
+- [Google guide](https://developers.google.com/youtube/v3/guides/uploading_a_video)
+- [YT Tutorial](https://youtu.be/N5jMX6erNeo)
 
 ## Project creation:
 ### Google Console:
@@ -23,7 +25,7 @@
 - [ ] upload planning
 - [ ] cronjob (fetch -> edit -> upload)
 
-#### Dependencies
+### Dependencies
 ```
 pip install oauth2client google-auth-oauthlib
 ```
