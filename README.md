@@ -1,7 +1,6 @@
 # Automatic TikTok YT channel
 
-## [Google guide](https://developers.google.com/youtube/v3/guides/uploading_a_video)
-[YT Tutorial](https://youtu.be/N5jMX6erNeo)
+## [Google guide](https://developers.google.com/youtube/v3/guides/uploading_a_video) - [YT Tutorial](https://youtu.be/N5jMX6erNeo)
 
 ## Project creation:
 ### Google Console:
