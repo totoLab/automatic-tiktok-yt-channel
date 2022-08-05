@@ -15,11 +15,13 @@
 - [ ] Updated 3.x: https://github.com/kjellski/youtube-upload-video-py
 
 ### Usage
-` $ command.sh /path/to/file.mp4 "Title of the video" `
+` $ sh tiktokYt.sh `
+
+Specify in the the script above what the title of the video should be.
 
 ### Capabilities
-- [ ] video fetching
-- [ ] video editing
+- [x] video fetching
+- [x] video editing
 - [x] upload video to youtube, given an API key in [client_secret.json](https://developers.google.com/youtube/v3/guides/uploading_a_video)
 - [ ] automatic authorization token filling
 - [ ] upload planning
