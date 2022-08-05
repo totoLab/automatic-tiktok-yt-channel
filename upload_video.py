@@ -45,9 +45,34 @@ VALID_PRIVACY_STATUSES = ('public', 'private', 'unlisted')
 
 # Authorize the request and store authorization credentials.
 def get_authenticated_service():
-      flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
-      credentials = flow.run_console()
-      return build(API_SERVICE_NAME, API_VERSION, credentials = credentials)
+    flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
+    # credentials = flow.run_console() #! needs manual intervention from the user
+
+    filepath = 'refresh.token'
+    if os.path.exists(filepath):
+        with open(filepath, 'r') as f:
+            refresh_token = f.read()
+            credentials = get_credentials_from_refresh_token(refresh_token)
+    else:
+        credentials = new_auth(flow, filepath)
+    
+    return build(API_SERVICE_NAME, API_VERSION, credentials = credentials)
+
+def new_auth(flow, filepath):
+    # https://stackoverflow.com/a/61492002/12011160 - https://developers.google.com/apps-script/api/quickstart/python
+    credentials = flow.run_local_server(
+        host='localhost',
+        authorization_prompt_message='Please visit this URL: {url}',
+        success_message='The auth flow is complete; you may close this window.',
+        open_browser=True
+    )
+    with open(filepath, 'w+') as f:
+        f.write(credentials._refresh_token)
+
+    return credentials
+
+def get_credentials_from_refresh_token(token):
+    pass #TODO
 
 def initialize_upload(youtube, options):
     tags = None
