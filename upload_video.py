@@ -6,6 +6,7 @@ import httplib2
 import os
 import random
 import time
+import json
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
@@ -13,7 +14,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 from google_auth_oauthlib.flow import InstalledAppFlow
-
+from oauth2client import client as oauth2client_module
 # Explicitly tell the underlying HTTP transport library not to retry, since we are handling retry logic ourselves.
 httplib2.RETRIES = 1
 
@@ -72,7 +73,22 @@ def new_auth(flow, filepath):
     return credentials
 
 def get_credentials_from_refresh_token(token):
-    pass #TODO
+    with open(CLIENT_SECRETS_FILE, "r") as f:
+        secrets = json.loads(f.read())
+
+    local_secrets = secrets["installed"]
+    
+    credentials = oauth2client_module.OAuth2Credentials(
+            access_token = None, 
+            client_id = local_secrets["client_id"], 
+            client_secret = local_secrets["client_secret"], 
+            refresh_token = token, 
+            token_expiry = None, 
+            token_uri = local_secrets["auth_uri"],
+            user_agent="pythonclient")
+        
+    credentials.refresh(httplib2.Http())
+    return credentials
 
 def initialize_upload(youtube, options):
     tags = None
