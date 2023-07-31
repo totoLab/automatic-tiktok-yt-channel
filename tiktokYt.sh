@@ -38,4 +38,4 @@ done
 
 ffmpeg -y -f concat -i $file_list_loc -vcodec copy -acodec copy final.mp4
 
-./command.sh "final.mp4" "Complete test run 1"
+python upload.py --file final.mp4 --title $1 --description $1 
