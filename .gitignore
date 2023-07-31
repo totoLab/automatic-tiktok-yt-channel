@@ -2,3 +2,5 @@ build/
 *mp4
 client_secret.json
 *token*
+*tmp*
+__pycache__
