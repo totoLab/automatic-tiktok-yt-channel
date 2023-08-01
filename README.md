@@ -1,33 +1,13 @@
 # Automatic TikTok YT channel
 
-## Based on
-- [Google guide](https://developers.google.com/youtube/v3/guides/uploading_a_video)
-- [YT Tutorial](https://youtu.be/N5jMX6erNeo)
-
-## Project creation:
-### Google Console:
-- New project
-- API key creation (unrestricted): key should be bound to a static ip address (or to a range - CIDR)
-- OAuth 2.0 Client IDs (Desktop Client type): specify redirect (code assumes localhost)
-
-### Code samples: 
-- [x] Google 2.x: https://github.com/youtube/api-samples/blob/master/python/upload_video.py
-- [ ] Updated 3.x: https://github.com/kjellski/youtube-upload-video-py
-
-### Usage
-` $ sh tiktokYt.sh `
-
-Specify in the the script above what the title of the video should be.
-
-### Capabilities
-- [x] video fetching
-- [x] video editing
-- [x] upload video to youtube, given an API key in [client_secret.json](https://developers.google.com/youtube/v3/guides/uploading_a_video)
-- [ ] automatic authorization token filling
-- [ ] upload planning
-- [ ] cronjob (fetch -> edit -> upload)
-
-### Dependencies
+### Video generation
+Modify parameters inside start.sh
 ```
-pip install oauth2client google-auth-oauthlib
+./start.sh
 ```
+
+### Key generation for upload (service account, no OAuth)
+- Find the Service Account you created previously from the list of service accounts on the [page](https://console.cloud.google.com/iam-admin/serviceaccounts). It should have the custom name you provided during the creation process.
+- Generate Credentials File: In the Actions column for the specific Service Account, click on the three-dot menu (⋮) and select "Create key."
+- Choose Key Type: In the "Create key" dialog, select "JSON" as the key type and click the "Create" button.
+- Download the JSON Key File: Once you click "Create," a JSON file containing the Service Account credentials will be generated and downloaded to your computer. This file contains the private key, client ID, client email, and other authentication information.
