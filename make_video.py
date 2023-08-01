@@ -49,23 +49,19 @@ def parse_response_from_file(tmpFile):
     return urls
 
 def download_videos(urls, output_dir=DOWNLOAD_DIR):
-    for url in urls:
-        command = ["yt-dlp", "--output", os.path.join(output_dir, "%(title)s.%(ext)s"), url]
+    with open(Dirs.LOG_FILE_D, "w") as log_file:
+        for url in urls:
+            command = ["yt-dlp", "--output", os.path.join(output_dir, "%(title)s.%(ext)s"), url]
 
-        try:
-            subprocess.run(command, check=True)
-            print(f"Video downloaded: {url}")
-        except subprocess.CalledProcessError as e:
-            print(f"Error occurred while downloading {url}: {e}")
-            sys.exit()
+            try:
+                process = subprocess.Popen(command, stdout=log_file, stderr=subprocess.STDOUT)
+                process.wait()
+                print(f"Video downloaded: {url}")
+            except subprocess.CalledProcessError as e:
+                print(f"Error occurred while downloading {url}: {e}")
+                sys.exit()
 
-    for filename in os.listdir(output_dir):
-        if filename.endswith(".mp4"):
-            new_filename = re.sub(r"`", " ", filename)  
-            new_filename = re.sub(r"`", " ", new_filename)  
-            os.rename(os.path.join(output_dir, filename), os.path.join(output_dir, new_filename))
-
-    print("All videos downloaded and renamed successfully.")
+    print("All videos downloaded successfully.")
 
 def blurring(file_list_path):
     with open(file_list_path, "w") as file_list:
@@ -85,11 +81,19 @@ def blurring(file_list_path):
 
 def join_to_final(file_list_path):
     final_output = os.path.join(BUILD_DIR, "final.mp4")
-    subprocess.run([
-        "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", file_list_path,
-        "-vcodec", "copy", "-acodec", "copy", final_output
-    ])
-    print("Final video is ready.")
+    with open(Dirs.LOG_FILE_C, "w") as log_file:
+        command = [
+            "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", file_list_path,
+            "-vcodec", "copy", "-acodec", "copy", final_output
+        ]
+        try:
+            process = subprocess.Popen(command, stdout=log_file, stderr=subprocess.STDOUT)
+            process.wait()
+            print("Final video is ready.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error occurred during ffmpeg execution: {e}")
+            sys.exit()
+
 
 def clear_directory():
     files = glob.glob(f"{directory}/*")
