@@ -1,7 +1,15 @@
 # Automatic TikTok YT channel
 
+## TODOs
+- [x] download
+- [x] blurring
+- [x] concatenating
+- [x] extract verbose logging out of stdout 
+- [ ] extract hard-coded parameters as option in the start script
+- [ ] upload to yt
+
 ### Video generation
-Modify parameters inside start.sh
+Modify parameters inside of start script
 ```
 ./start.sh
 ```
