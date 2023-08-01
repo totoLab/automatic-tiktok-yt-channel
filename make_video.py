@@ -20,11 +20,14 @@ class Files:
     TITLES_FILE = os.path.join(Dirs.SERVICE_DIR, "titles.txt")
 
 def prepare_directories():
-    if not os.path.exists(Dirs.DOWNLOAD_DIR):
-        os.makedirs(Dirs.DOWNLOAD_DIR)
+    for dir_attr in dir(Dirs):
+        if dir_attr.startswith('__') or not isinstance(getattr(Dirs, dir_attr), str):
+            continue  # Skip special attributes and non-string attributes
 
-    if not os.path.exists(Dirs.BLUR_DIR):
-        os.makedirs(Dirs.BLUR_DIR)
+        directory_path = getattr(Dirs, dir_attr)
+
+        if not os.path.exists(directory_path):
+            os.makedirs(directory_path)
     
     print("All necessary directories have been created.")
 
