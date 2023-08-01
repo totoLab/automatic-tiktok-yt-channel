@@ -19,7 +19,7 @@ def main(api_fetch_url, tmpFile, file_list_path, MANUAL=True, clean_up_toggle=Fa
     
     m.join_to_final(file_list_path)
 
-    gen.title(m.Dirs.TITLES_FILE)
+    gen.title(m.Files.TITLES_FILE)
 
     if MANUAL:
         print("Now upload video to yt channel.")

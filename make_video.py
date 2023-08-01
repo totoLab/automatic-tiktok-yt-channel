@@ -12,10 +12,12 @@ class Dirs:
     DOWNLOAD_DIR = os.path.abspath("build/raw_videos")
     LOG_DIR = os.path.abspath("logs")
     SERVICE_DIR = os.path.abspath("service_files")
-    LOG_FILE_D = os.path.join(logs, "ytdl.log")
-    LOG_FILE_B = os.path.join(logs, "ffmpeg_blur.log")
-    LOG_FILE_C = os.path.join(logs, "ffmpeg_concat.log")
-    TITLES_FILE = os.path.join(logs, "titles.txt")
+    
+class Files:
+    LOG_FILE_D = os.path.join(Dirs.LOG_DIR, "ytdl.log")
+    LOG_FILE_B = os.path.join(Dirs.LOG_DIR, "ffmpeg_blur.log")
+    LOG_FILE_C = os.path.join(Dirs.LOG_DIR, "ffmpeg_concat.log")
+    TITLES_FILE = os.path.join(Dirs.SERVICE_DIR, "titles.txt")
 
 def prepare_directories():
     if not os.path.exists(Dirs.DOWNLOAD_DIR):
@@ -49,7 +51,7 @@ def parse_response_from_file(tmpFile):
     return urls
 
 def download_videos(urls, output_dir=Dirs.DOWNLOAD_DIR):
-    with open(Dirs.LOG_FILE_D, "w") as log_file:
+    with open(Files.LOG_FILE_D, "w") as log_file:
         for url in urls:
             command = ["yt-dlp", "--output", os.path.join(output_dir, "%(title)s.%(ext)s"), url]
 
@@ -64,12 +66,12 @@ def download_videos(urls, output_dir=Dirs.DOWNLOAD_DIR):
     print("All videos downloaded successfully.")
 
 def blurring(file_list_path):
-    with open(Dirs.TITLES_FILE, "w") as titles:
+    with open(Files.TITLES_FILE, "w") as titles:
         for title in os.listdir(Dirs.DOWNLOAD_DIR):
             titles.write(title)
 
     with open(file_list_path, "w") as file_list:
-        with open(Dirs.LOG_FILE_B, "w") as log_file:
+        with open(Files.LOG_FILE_B, "w") as log_file:
             for i, filename in enumerate( os.listdir(Dirs.DOWNLOAD_DIR) ):
                 output_path = os.path.join(Dirs.BLUR_DIR, filename)
                 if filename.endswith(".mp4") and filename not in os.listdir(Dirs.BLUR_DIR):
@@ -97,7 +99,7 @@ def blurring(file_list_path):
 
 def join_to_final(file_list_path):
     final_output = os.path.join(Dirs.BUILD_DIR, "final.mp4")
-    with open(Dirs.LOG_FILE_C, "w") as log_file:
+    with open(Files.LOG_FILE_C, "w") as log_file:
         command = [
             "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", file_list_path,
             "-vcodec", "copy", "-acodec", "copy", final_output
