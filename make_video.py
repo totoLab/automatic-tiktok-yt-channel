@@ -72,6 +72,9 @@ def blurring(file_list_path):
             titles.write(title)
 
     with open(file_list_path, "w") as file_list:
+                    new_filename = f"{i}.mp4" 
+                    os.rename(output_path, os.path.join(BLUR_DIR, new_filename))
+                    print(f"Renamed to {new_filename}")
                     file_list.write(f"file {os.path.abspath(output_path)}\n")
 
             file_list.write(f"file `{os.path.abspath(output_path)}`\n")
