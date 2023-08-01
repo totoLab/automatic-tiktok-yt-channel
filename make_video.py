@@ -95,13 +95,14 @@ def join_to_final(file_list_path):
             sys.exit()
 
 
-def clear_directory():
+def clear_directory(directory):
     files = glob.glob(f"{directory}/*")
     for f in files:
         os.remove(f)
 
 def clean_up(tmpFile):
-    os.remove(tmpFile)
+    if os.path.exists(tmpFile):
+        os.remove(tmpFile)
     clear_directory(BLUR_DIR)
     clear_directory(DOWNLOAD_DIR)
     
