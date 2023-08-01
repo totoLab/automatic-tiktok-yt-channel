@@ -3,9 +3,9 @@ import make_video as m
 #import upload_video
 
 class Directories:
-    BUILD_DIR = "build"
-    BLUR_DIR = "build/blur"
-    DOWNLOAD_DIR = "build/raw_videos"
+    BUILD_DIR = os.path.abspath("build")
+    BLUR_DIR = os.path.abspath("build/blur")
+    DOWNLOAD_DIR = os.path.abspath("build/raw_videos")
 
 def main(api_fetch_url, tmpFile, file_list_path, clean_up_toggle=False):
     m.prepare_directories()
