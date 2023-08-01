@@ -1,5 +1,11 @@
+import sys, os
 import make_video as m
-import upload_video
+#import upload_video
+
+class Directories:
+    BUILD_DIR = "build"
+    BLUR_DIR = "build/blur"
+    DOWNLOAD_DIR = "build/raw_videos"
 
 def main(api_fetch_url, tmpFile, file_list_path, clean_up_toggle=False):
     m.prepare_directories()
@@ -25,8 +31,16 @@ def main(api_fetch_url, tmpFile, file_list_path, clean_up_toggle=False):
     print("Uploaded video to yt channel.")
 
 if __name__ == "__main__":
-    limit = 2
+    args = sys.argv
+    if len(args) < 3:
+        print(f"Not enough arguments, usage: {args[0]} [no. videos limit] [response dump file]")
+        sys.exit()
+
+    limit = 5
     tmpFile = "tmpFile.json"
-    file_list_path = os.path.join(BUILD_DIR, "file_list.txt")
+
+    limit = int(args[1])
+    tmpFile = args[2]
+    file_list_path = os.path.join(Directories.BUILD_DIR, "file_list.txt")
     api_fetch_url = f"https://www.reddit.com/r/TikTokCringe/hot.json?limit={limit}"
     main(api_fetch_url, tmpFile, file_list_path, clean_up_toggle=False)

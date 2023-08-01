@@ -3,10 +3,11 @@ import subprocess
 import requests
 import json
 import sys
+from entrypoint import Directories
 
-BUILD_DIR = "build"
-BLUR_DIR = "build/blur"
-DOWNLOAD_DIR = "build/raw_videos"
+BUILD_DIR = Directories.BUILD_DIR
+BLUR_DIR = Directories.BLUR_DIR
+DOWNLOAD_DIR = Directories.DOWNLOAD_DIR
 
 def prepare_directories():
     if not os.path.exists(DOWNLOAD_DIR):
