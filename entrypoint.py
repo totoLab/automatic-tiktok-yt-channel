@@ -4,6 +4,9 @@ import generate as gen
 #import upload_video
 
 def main(api_fetch_url, tmpFile, file_list_path, MANUAL=True, clean_up_toggle=False):
+    if clean_up_toggle:
+        m.clean_up(tmpFile)
+
     m.prepare_directories()
 
     response = m.get_data(api_fetch_url)
@@ -36,4 +39,4 @@ if __name__ == "__main__":
     tmpFile = os.path.abspath(args[2])
     file_list_path = os.path.join(m.Dirs.BUILD_DIR, "file_list.txt")
     api_fetch_url = f"https://www.reddit.com/r/TikTokCringe/hot.json?limit={limit}"
-    main(api_fetch_url, tmpFile, file_list_path)
+    main(api_fetch_url, tmpFile, file_list_path, clean_up_toggle=True)
