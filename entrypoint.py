@@ -7,7 +7,7 @@ class Directories:
     BLUR_DIR = os.path.abspath("build/blur")
     DOWNLOAD_DIR = os.path.abspath("build/raw_videos")
 
-def main(api_fetch_url, tmpFile, file_list_path, clean_up_toggle=False):
+def main(api_fetch_url, tmpFile, file_list_path, MANUAL=True, clean_up_toggle=False):
     m.prepare_directories()
     print("All necessary directories have been created.")
 
@@ -23,12 +23,14 @@ def main(api_fetch_url, tmpFile, file_list_path, clean_up_toggle=False):
     m.join_to_final(file_list_path)
     print("Final video is ready.")
 
-    sys.exit()
     if clean_up_toggle:
         m.clean_up(tmpFile)
         print("Cleaned up unnecessary files.")
 
-    print("Uploaded video to yt channel.")
+    if MANUAL:
+        print("Now upload video to yt channel.")
+    else:
+        print("TODO: make the video upload automatically.")
 
 if __name__ == "__main__":
     args = sys.argv
@@ -43,4 +45,4 @@ if __name__ == "__main__":
     tmpFile = args[2]
     file_list_path = os.path.join(Directories.BUILD_DIR, "file_list.txt")
     api_fetch_url = f"https://www.reddit.com/r/TikTokCringe/hot.json?limit={limit}"
-    main(api_fetch_url, tmpFile, file_list_path, clean_up_toggle=False)
+    main(api_fetch_url, tmpFile, file_list_path)
