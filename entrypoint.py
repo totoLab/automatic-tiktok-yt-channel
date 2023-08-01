@@ -2,11 +2,6 @@ import sys, os
 import make_video as m
 #import upload_video
 
-class Directories:
-    BUILD_DIR = os.path.abspath("build")
-    BLUR_DIR = os.path.abspath("build/blur")
-    DOWNLOAD_DIR = os.path.abspath("build/raw_videos")
-
 def main(api_fetch_url, tmpFile, file_list_path, MANUAL=True, clean_up_toggle=False):
     m.prepare_directories()
     print("All necessary directories have been created.")
@@ -43,6 +38,6 @@ if __name__ == "__main__":
 
     limit = int(args[1])
     tmpFile = args[2]
-    file_list_path = os.path.join(Directories.BUILD_DIR, "file_list.txt")
+    file_list_path = os.path.join(m.Directories.BUILD_DIR, "file_list.txt")
     api_fetch_url = f"https://www.reddit.com/r/TikTokCringe/hot.json?limit={limit}"
     main(api_fetch_url, tmpFile, file_list_path)

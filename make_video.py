@@ -3,7 +3,11 @@ import subprocess
 import requests
 import json
 import sys
-from entrypoint import Directories
+
+class Directories:
+    BUILD_DIR = os.path.abspath("build")
+    BLUR_DIR = os.path.abspath("build/blur")
+    DOWNLOAD_DIR = os.path.abspath("build/raw_videos")
 
 BUILD_DIR = Directories.BUILD_DIR
 BLUR_DIR = Directories.BLUR_DIR
@@ -63,17 +67,13 @@ def blurring(file_list_path):
             file_list.write(f"file '{os.path.abspath(output_path)}'\n")
 
 def join_to_final(file_list_path):
-    with open(file_list_path, "r") as file_list:
-        filenames = file_list.read().splitlines()
-        files = " ".join(filenames)
-
-    # Concatenate the blurred videos using ffmpeg
     final_output = os.path.join(BUILD_DIR, "final.mp4")
     subprocess.run([
-        "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", "concat:" + files,
+        "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", file_list_path,
         "-vcodec", "copy", "-acodec", "copy", final_output
     ])
 
 def clean_up(tmpFile):
     os.remove(tmpFile)
 
+join_to_final("build/file_list.txt")
