@@ -32,6 +32,7 @@ def prepare_directories():
 def get_data(url):
     headers = {"User-agent": "your bot 0.1"}
     response = requests.get(url, headers=headers)
+    print(f"Got data from {url}")
     return response
 
 def save_response(response, tmpFile):
@@ -45,7 +46,9 @@ def parse_response_from_file(tmpFile):
     urls = [item["data"]["url_overridden_by_dest"] for item in data["data"]["children"]
             if "url_overridden_by_dest" in item["data"]] [1:] #? first url is a discord invite
 
-    print(f"Parsed data from {api_fetch_url}. Urls are:\n{[f"{url}\n" for url in urls]}")
+    print(f"Parsed data. Urls are:")
+    for string in [f"{url}" for url in urls]:
+        print(string)
     return urls
 
 def download_videos(urls, output_dir=DOWNLOAD_DIR):
