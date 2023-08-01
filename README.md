@@ -5,6 +5,8 @@
 - [x] blurring
 - [x] concatenating
 - [x] extract verbose logging out of stdout 
+- [ ] automate changing number in thumbnail
+- [ ] add intro based on thumbnail at the start
 - [ ] extract hard-coded parameters as option in the start script
 - [ ] upload to yt
 
