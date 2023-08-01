@@ -10,22 +10,19 @@ class Dirs:
     BUILD_DIR = os.path.abspath("build")
     BLUR_DIR = os.path.abspath("build/blur")
     DOWNLOAD_DIR = os.path.abspath("build/raw_videos")
-    LOG_FILE_D = os.path.abspath("logs/ytdl.log")
-    LOG_FILE_B = os.path.abspath("logs/ffmpeg_blur.log")
-    LOG_FILE_C = os.path.abspath("logs/ffmpeg_concat.log")
-    TITLES_FILE = os.path.abspath("service_files/titles.txt")
-
-
-BUILD_DIR = Dirs.BUILD_DIR
-BLUR_DIR = Dirs.BLUR_DIR
-DOWNLOAD_DIR = Dirs.DOWNLOAD_DIR
+    LOG_DIR = os.path.abspath("logs")
+    SERVICE_DIR = os.path.abspath("service_files")
+    LOG_FILE_D = os.path.join(logs, "ytdl.log")
+    LOG_FILE_B = os.path.join(logs, "ffmpeg_blur.log")
+    LOG_FILE_C = os.path.join(logs, "ffmpeg_concat.log")
+    TITLES_FILE = os.path.join(logs, "titles.txt")
 
 def prepare_directories():
-    if not os.path.exists(DOWNLOAD_DIR):
-        os.makedirs(DOWNLOAD_DIR)
+    if not os.path.exists(Dirs.DOWNLOAD_DIR):
+        os.makedirs(Dirs.DOWNLOAD_DIR)
 
-    if not os.path.exists(BLUR_DIR):
-        os.makedirs(BLUR_DIR)
+    if not os.path.exists(Dirs.BLUR_DIR):
+        os.makedirs(Dirs.BLUR_DIR)
     
     print("All necessary directories have been created.")
 
@@ -51,7 +48,7 @@ def parse_response_from_file(tmpFile):
         print(string)
     return urls
 
-def download_videos(urls, output_dir=DOWNLOAD_DIR):
+def download_videos(urls, output_dir=Dirs.DOWNLOAD_DIR):
     with open(Dirs.LOG_FILE_D, "w") as log_file:
         for url in urls:
             command = ["yt-dlp", "--output", os.path.join(output_dir, "%(title)s.%(ext)s"), url]
@@ -68,15 +65,15 @@ def download_videos(urls, output_dir=DOWNLOAD_DIR):
 
 def blurring(file_list_path):
     with open(Dirs.TITLES_FILE, "w") as titles:
-        for title in os.listdir(DOWNLOAD_DIR):
+        for title in os.listdir(Dirs.DOWNLOAD_DIR):
             titles.write(title)
 
     with open(file_list_path, "w") as file_list:
         with open(Dirs.LOG_FILE_B, "w") as log_file:
-            for i, filename in enumerate( os.listdir(DOWNLOAD_DIR) ):
-                output_path = os.path.join(BLUR_DIR, filename)
-                if filename.endswith(".mp4") and filename not in os.listdir(BLUR_DIR):
-                    input_path = os.path.join(DOWNLOAD_DIR, filename)
+            for i, filename in enumerate( os.listdir(Dirs.DOWNLOAD_DIR) ):
+                output_path = os.path.join(Dirs.BLUR_DIR, filename)
+                if filename.endswith(".mp4") and filename not in os.listdir(Dirs.BLUR_DIR):
+                    input_path = os.path.join(Dirs.DOWNLOAD_DIR, filename)
                     command = [
                         "ffmpeg", "-y", "-i", input_path,
                         "-lavfi", "[0:v]scale=ih*16/9:-1,boxblur=luma_radius=min(h\,w)/20:luma_power=1:chroma_radius=min(cw\,ch)/20:chroma_power=1[bg];[bg][0:v]overlay=(W-w)/2:(H-h)/2,crop=h=iw*9/16",
@@ -91,7 +88,7 @@ def blurring(file_list_path):
                         sys.exit()
 
                     new_filename = f"{i}.mp4" 
-                    os.rename(output_path, os.path.join(BLUR_DIR, new_filename))
+                    os.rename(output_path, os.path.join(Dirs.BLUR_DIR, new_filename))
                     print(f"Renamed to {new_filename}")
                     file_list.write(f"file {os.path.abspath(output_path)}\n")
 
@@ -99,7 +96,7 @@ def blurring(file_list_path):
 
 
 def join_to_final(file_list_path):
-    final_output = os.path.join(BUILD_DIR, "final.mp4")
+    final_output = os.path.join(Dirs.BUILD_DIR, "final.mp4")
     with open(Dirs.LOG_FILE_C, "w") as log_file:
         command = [
             "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", file_list_path,
@@ -122,7 +119,7 @@ def clear_directory(directory):
 def clean_up(tmpFile):
     if os.path.exists(tmpFile):
         os.remove(tmpFile)
-    clear_directory(BLUR_DIR)
-    clear_directory(DOWNLOAD_DIR)
+    clear_directory(Dirs.BLUR_DIR)
+    clear_directory(Dirs.DOWNLOAD_DIR)
     
     print("Cleaned up unnecessary files.")
