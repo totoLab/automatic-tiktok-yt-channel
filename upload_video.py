@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 import argparse
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -7,7 +8,7 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 
 # Path to the Service Account JSON credentials
-SERVICE_ACCOUNT_FILE = 'path/to/service_account_credentials.json'
+SERVICE_ACCOUNT_FILE = os.path.abspath('service_files/service_account_credentials.json')
 
 # Scopes required for YouTube Data API
 SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
@@ -15,6 +16,9 @@ API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
 
 VALID_PRIVACY_STATUSES = ('public', 'private', 'unlisted')
+
+MAX_RETRIES = 10
+RETRIABLE_ERROR_CODES = [500, 502, 503, 504]
 
 # Build the YouTube Data API client with Service Account credentials
 def get_authenticated_service():
@@ -67,7 +71,7 @@ def resumable_upload(request):
                 else:
                     exit('The upload failed with an unexpected response: %s' % response)
         except HttpError as e:
-            if e.resp.status in [500, 502, 503, 504]:
+            if e.resp.status in RETRIABLE_ERROR_CODES:
                 error = 'A retriable HTTP error %d occurred:\n%s' % (e.resp.status, e.content)
             else:
                 raise
