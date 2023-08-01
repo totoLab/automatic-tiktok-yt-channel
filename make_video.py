@@ -72,13 +72,30 @@ def blurring(file_list_path):
             titles.write(title)
 
     with open(file_list_path, "w") as file_list:
+        with open(Dirs.LOG_FILE_B, "w") as log_file:
+            for i, filename in enumerate( os.listdir(DOWNLOAD_DIR) ):
+                output_path = os.path.join(BLUR_DIR, filename)
+                if filename.endswith(".mp4") and filename not in os.listdir(BLUR_DIR):
+                    input_path = os.path.join(DOWNLOAD_DIR, filename)
+                    command = [
+                        "ffmpeg", "-y", "-i", input_path,
+                        "-lavfi", "[0:v]scale=ih*16/9:-1,boxblur=luma_radius=min(h\,w)/20:luma_power=1:chroma_radius=min(cw\,ch)/20:chroma_power=1[bg];[bg][0:v]overlay=(W-w)/2:(H-h)/2,crop=h=iw*9/16",
+                        "-vb", "800K", output_path,
+                    ]
+                    try:
+                        process = subprocess.Popen(command, stdout=log_file, stderr=subprocess.STDOUT)
+                        process.wait()
+                        print(f"Video blurred: {filename[:30]}...", end=" -> ")
+                    except subprocess.CalledProcessError as e:
+                        print(f"Error occurred while blurring {filename}: {e}")
+                        sys.exit()
+
                     new_filename = f"{i}.mp4" 
                     os.rename(output_path, os.path.join(BLUR_DIR, new_filename))
                     print(f"Renamed to {new_filename}")
                     file_list.write(f"file {os.path.abspath(output_path)}\n")
 
-            file_list.write(f"file `{os.path.abspath(output_path)}`\n")
-    print("Applied necessary blurring.")
+    print("Applied necessary blurring, renamed files and created list of files to concat.")
 
 
 def join_to_final(file_list_path):
