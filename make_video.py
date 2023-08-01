@@ -6,14 +6,19 @@ import sys
 import glob
 import re
 
-class Directories:
+class Dirs:
     BUILD_DIR = os.path.abspath("build")
     BLUR_DIR = os.path.abspath("build/blur")
     DOWNLOAD_DIR = os.path.abspath("build/raw_videos")
+    LOG_FILE_D = os.path.abspath("logs/ytdl.log")
+    LOG_FILE_B = os.path.abspath("logs/ffmpeg_blur.log")
+    LOG_FILE_C = os.path.abspath("logs/ffmpeg_concat.log")
+    TITLES_FILE = os.path.abspath("service_files/titles.txt")
 
-BUILD_DIR = Directories.BUILD_DIR
-BLUR_DIR = Directories.BLUR_DIR
-DOWNLOAD_DIR = Directories.DOWNLOAD_DIR
+
+BUILD_DIR = Dirs.BUILD_DIR
+BLUR_DIR = Dirs.BLUR_DIR
+DOWNLOAD_DIR = Dirs.DOWNLOAD_DIR
 
 def prepare_directories():
     if not os.path.exists(DOWNLOAD_DIR):
