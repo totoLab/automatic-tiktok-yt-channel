@@ -3,6 +3,8 @@ import subprocess
 import requests
 import json
 import sys
+import glob
+import re
 
 class Directories:
     BUILD_DIR = os.path.abspath("build")
@@ -19,8 +21,9 @@ def prepare_directories():
 
     if not os.path.exists(BLUR_DIR):
         os.makedirs(BLUR_DIR)
+    
+    print("All necessary directories have been created.")
 
-# Fetch data from Reddit API and save it to tmpFile.json
 def get_data(url):
     headers = {"User-agent": "your bot 0.1"}
     response = requests.get(url, headers=headers)
@@ -35,22 +38,29 @@ def parse_response_from_file(tmpFile):
         data = json.load(file)
 
     urls = [item["data"]["url_overridden_by_dest"] for item in data["data"]["children"]
-            if "url_overridden_by_dest" in item["data"]]
+            if "url_overridden_by_dest" in item["data"]] [1:] #? first url is a discord invite
 
-    return urls[1:] #? first url is a discord invite
+    print(f"Parsed data from {api_fetch_url}. Urls are:\n{[f"{url}\n" for url in urls]}")
+    return urls
 
 def download_videos(urls, output_dir=DOWNLOAD_DIR):
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    for url in urls:
+        command = ["yt-dlp", "--output", os.path.join(output_dir, "%(title)s.%(ext)s"), url]
 
-    command = ["yt-dlp", "--output", os.path.join(output_dir, "%(title)s.%(ext)s")] + urls
+        try:
+            subprocess.run(command, check=True)
+            print(f"Video downloaded: {url}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error occurred while downloading {url}: {e}")
+            sys.exit()
 
-    try:
-        subprocess.run(command, check=True)
-        print("Videos downloaded successfully.")
-    except subprocess.CalledProcessError as e:
-        print(f"Error occurred while downloading videos: {e}")
-        sys.exit()
+    for filename in os.listdir(output_dir):
+        if filename.endswith(".mp4"):
+            new_filename = re.sub(r"`", " ", filename)  
+            new_filename = re.sub(r"`", " ", new_filename)  
+            os.rename(os.path.join(output_dir, filename), os.path.join(output_dir, new_filename))
+
+    print("All videos downloaded and renamed successfully.")
 
 def blurring(file_list_path):
     with open(file_list_path, "w") as file_list:
@@ -64,7 +74,9 @@ def blurring(file_list_path):
                     "-vb", "800K", output_path
                 ])
 
-            file_list.write(f"file '{os.path.abspath(output_path)}'\n")
+            file_list.write(f"file `{os.path.abspath(output_path)}`\n")
+    print("Applied necessary blurring.")
+
 
 def join_to_final(file_list_path):
     final_output = os.path.join(BUILD_DIR, "final.mp4")
@@ -72,6 +84,16 @@ def join_to_final(file_list_path):
         "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", file_list_path,
         "-vcodec", "copy", "-acodec", "copy", final_output
     ])
+    print("Final video is ready.")
+
+def clear_directory():
+    files = glob.glob(f"{directory}/*")
+    for f in files:
+        os.remove(f)
 
 def clean_up(tmpFile):
     os.remove(tmpFile)
+    clear_directory(BLUR_DIR)
+    clear_directory(DOWNLOAD_DIR)
+    
+    print("Cleaned up unnecessary files.")

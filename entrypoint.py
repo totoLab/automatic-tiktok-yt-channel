@@ -4,23 +4,19 @@ import make_video as m
 
 def main(api_fetch_url, tmpFile, file_list_path, MANUAL=True, clean_up_toggle=False):
     m.prepare_directories()
-    print("All necessary directories have been created.")
 
     response = m.get_data(api_fetch_url)
     m.save_response(response, tmpFile)
     urls = m.parse_response_from_file(tmpFile)
-    print(f"Got and parsed data from {api_fetch_url}. Urls are:\n{urls}")
 
     m.download_videos(urls)
+
     m.blurring(file_list_path)
-    print("Applied necessary blurring.")
     
     m.join_to_final(file_list_path)
-    print("Final video is ready.")
 
     if clean_up_toggle:
         m.clean_up(tmpFile)
-        print("Cleaned up unnecessary files.")
 
     if MANUAL:
         print("Now upload video to yt channel.")
@@ -37,7 +33,7 @@ if __name__ == "__main__":
     tmpFile = "tmpFile.json"
 
     limit = int(args[1])
-    tmpFile = args[2]
+    tmpFile = os.path.abspath(args[2])
     file_list_path = os.path.join(m.Directories.BUILD_DIR, "file_list.txt")
     api_fetch_url = f"https://www.reddit.com/r/TikTokCringe/hot.json?limit={limit}"
     main(api_fetch_url, tmpFile, file_list_path)
