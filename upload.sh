@@ -1,0 +1,1 @@
+python3 upload_video.py --file "file.mp4"
