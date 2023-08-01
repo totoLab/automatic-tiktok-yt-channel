@@ -75,5 +75,3 @@ def join_to_final(file_list_path):
 
 def clean_up(tmpFile):
     os.remove(tmpFile)
-
-join_to_final("build/file_list.txt")
