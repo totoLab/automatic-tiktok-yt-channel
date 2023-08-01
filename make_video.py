@@ -67,6 +67,10 @@ def download_videos(urls, output_dir=DOWNLOAD_DIR):
     print("All videos downloaded successfully.")
 
 def blurring(file_list_path):
+    with open(Dirs.TITLES_FILE, "w") as titles:
+        for title in os.listdir(DOWNLOAD_DIR):
+            titles.write(title)
+
     with open(file_list_path, "w") as file_list:
         for filename in os.listdir(DOWNLOAD_DIR):
             output_path = os.path.join(BLUR_DIR, filename)
