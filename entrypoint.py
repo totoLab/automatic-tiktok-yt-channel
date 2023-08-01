@@ -34,6 +34,6 @@ if __name__ == "__main__":
 
     limit = int(args[1])
     tmpFile = os.path.abspath(args[2])
-    file_list_path = os.path.join(m.Directories.BUILD_DIR, "file_list.txt")
+    file_list_path = os.path.join(m.Dirs.BUILD_DIR, "file_list.txt")
     api_fetch_url = f"https://www.reddit.com/r/TikTokCringe/hot.json?limit={limit}"
     main(api_fetch_url, tmpFile, file_list_path)
