@@ -1,2 +1,2 @@
-# limit, response dump file
-python3 entrypoint.py 6 service_files/tmpFile.json
+# config file, category
+python3 entrypoint.py service_files/config.json cringe
