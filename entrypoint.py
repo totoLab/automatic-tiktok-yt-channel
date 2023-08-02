@@ -13,19 +13,17 @@ def main(api_fetch_url, tmpFile, file_list_path, compilation_number, MANUAL=True
     response = m.get_data(api_fetch_url)
     m.save_response(response, tmpFile)
     urls = m.parse_response_from_file(tmpFile)
+        
+    intro.generate_intro(file_list_path, category, compilation_number)
 
     m.download_videos(urls)
 
     m.blurring(file_list_path)
-    
-    m.intro.generate_intro(category, compilation_number)
 
     m.join_to_final(file_list_path)
 
     title = f"{category} tiktok compilation #{compilation_number}"
     print(f"Title: {title}")
-
-    
 
     if MANUAL:
         print("Now upload video to yt channel.")

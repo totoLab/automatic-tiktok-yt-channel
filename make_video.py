@@ -10,7 +10,7 @@ class Dirs:
     BUILD_DIR = os.path.abspath("build")
     BLUR_DIR = os.path.abspath("build/blur")
     DOWNLOAD_DIR = os.path.abspath("build/raw_videos")
-    IMGS_DIR = os.path.abspath("build/imgs")
+    INTRO_TEMP = os.path.abspath("build/intro_templates")
     INTRO_DIR = os.path.abspath("build/intro")
     LOG_DIR = os.path.abspath("logs")
     SERVICE_DIR = os.path.abspath("service_files")
@@ -19,6 +19,7 @@ class Files:
     LOG_FILE_D = os.path.join(Dirs.LOG_DIR, "ytdl.log")
     LOG_FILE_B = os.path.join(Dirs.LOG_DIR, "ffmpeg_blur.log")
     LOG_FILE_C = os.path.join(Dirs.LOG_DIR, "ffmpeg_concat.log")
+    LOG_FILE_I = os.path.join(Dirs.LOG_DIR, "ffmpeg_intro.log")
     TITLES_FILE = os.path.join(Dirs.SERVICE_DIR, "titles.txt")
 
 def prepare_directories():
@@ -75,7 +76,7 @@ def blurring(file_list_path):
         for title in os.listdir(Dirs.DOWNLOAD_DIR):
             titles.write(title)
 
-    with open(file_list_path, "w") as file_list:
+    with open(file_list_path, "a") as file_list:
         with open(Files.LOG_FILE_B, "w") as log_file:
             for i, filename in enumerate( os.listdir(Dirs.DOWNLOAD_DIR) ):
                 output_path = os.path.join(Dirs.BLUR_DIR, filename)
@@ -95,9 +96,10 @@ def blurring(file_list_path):
                         sys.exit()
 
                     new_filename = f"{i}.mp4" 
-                    os.rename(output_path, os.path.join(Dirs.BLUR_DIR, new_filename))
+                    new_path = os.path.join(Dirs.BLUR_DIR, new_filename)
+                    os.rename(output_path, new_path)
                     print(f"Renamed to {new_filename}")
-                    file_list.write(f"file {os.path.abspath(output_path)}\n")
+                    file_list.write(f"file {os.path.abspath(new_path)}\n")
 
     print("Applied necessary blurring, renamed files and created list of files to concat.")
 
@@ -128,5 +130,6 @@ def clean_up(tmpFile):
         os.remove(tmpFile)
     clear_directory(Dirs.BLUR_DIR)
     clear_directory(Dirs.DOWNLOAD_DIR)
+    clear_directory(Dirs.INTRO_DIR)
     
     print("Cleaned up unnecessary files.")

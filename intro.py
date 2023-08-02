@@ -2,17 +2,40 @@ import os
 import subprocess
 import json
 import sys
-from make_video import Dirs
+from make_video import Dirs, Files
 
 from PIL import Image, ImageDraw, ImageFont
 
-def generate_intro(category, compilation_number):
-    input_image_path = os.path.join(Dirs.IMGS_DIR, f"{category}.png")
-    output_image_path = os.path.join(Dirs.IMGS_DIR, f"out_{category}.png")
+def generate_intro(file_list_path, category, compilation_number):
+    image_path = generate_thumbnail(category, compilation_number)
+    music_path = os.path.join(Dirs.INTRO_TEMP, "intro_music.mp3")
+    final_output = os.path.join(Dirs.INTRO_DIR, "intro_video.mp4")
+
+    with open(Files.LOG_FILE_I, "w") as log_file:
+        command = [
+            "ffmpeg", "-y", "-i", music_path, "-loop", "1", "-i", image_path,
+            "-vf", "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2",
+            "-c:a", "aac", "-shortest", final_output
+        ]
+        try:    
+            process = subprocess.Popen(command, stdout=log_file, stderr=subprocess.STDOUT)
+            process.wait()
+            print("Intro is ready.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error occurred during ffmpeg execution: {e}")
+            sys.exit()
+
+    with open(file_list_path, "w") as file_list:
+        file_list.write(f"file {final_output}\n")
+
+def generate_thumbnail(category, compilation_number):
+    input_image_path = os.path.join(Dirs.INTRO_TEMP, f"{category}.png")
+    output_image_path = os.path.join(Dirs.INTRO_DIR, f"{category}.png")
     text = f"#{compilation_number}"
     text_config = text, (1195, 600), 85, (255, 255, 255), 3, (0, 0, 0)
 
     add_text_to_image(input_image_path, output_image_path, text_config)
+    return output_image_path
 
 
 def add_text_to_image(input_image_path, output_image_path, text_config):
@@ -36,4 +59,4 @@ def add_text_to_image(input_image_path, output_image_path, text_config):
     image.save(output_image_path)
 
 if __name__ == "__main__":
-    generate_intro("funny", 2190)
+    generate_intro(os.path.join(Dirs.BUILD_DIR, "file_list.txt"), "funny", 2190)
