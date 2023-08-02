@@ -1,0 +1,11 @@
+{
+    "limit": 5,
+    "tmpFile": "service_files/tmpFile.json",
+    "thumbnails": "build/imgs/",
+    "compilations": {
+        "category": {
+            "url": "https://insert.your.source",
+            "number": 1
+        }
+    }
+}

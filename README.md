@@ -11,6 +11,8 @@
 - [ ] upload to yt
 
 ### Video generation
+Create a `config.json file` inside service files modifiying `template.json` provided. 
+
 Modify parameters inside of start script
 ```
 ./start.sh
