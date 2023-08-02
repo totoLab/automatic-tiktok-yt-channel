@@ -9,37 +9,18 @@ from PIL import Image, ImageDraw, ImageFont
 def generate_intro(file_list_path, font_path, category, compilation_number):
     image_path = generate_thumbnail(category, compilation_number, font_path)
     music_path = os.path.join(Dirs.INTRO_TEMP, "intro_music.mp3")
-    too_long_output = os.path.join(Dirs.INTRO_DIR, "intro_video_untruncated.mp4")
     final_output = os.path.join(Dirs.INTRO_DIR, "intro_video.mp4")
 
     with open(Files.LOG_FILE_I, "w") as log_file:
         command = [
-            "ffmpeg", "-y", "-i", music_path, "-loop", "1", "-i", image_path,
-            "-vf", "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2",
-            "-c:a", "aac", "-shortest", too_long_output
-        ]
-        try:    
-            process = subprocess.Popen(command, stdout=log_file, stderr=subprocess.STDOUT)
-            process.wait()
-            print("Intro is rendered.")
-        except subprocess.CalledProcessError as e:
-            print(f"Error occurred during ffmpeg execution: {e}")
-            sys.exit()
-
-        audio_duration = subprocess.check_output(
-            ['ffprobe', '-i', music_path, '-show_entries', 'format=duration', '-v', 'quiet', '-of', 'csv=p=0']
-        ).decode('utf-8').strip()[0]
-
-        command = [
-            "ffmpeg", "-y", "-i", too_long_output, 
-            "-t", audio_duration,
-            "-c:v", "copy", "-c:a", "copy",
+            'ffmpeg', '-i', image_path, '-i', music_path,
+            '-c:v', 'libx264', '-c:a', 'aac', '-strict', 'experimental', '-b:a', '192k',
             final_output
         ]
         try:    
             process = subprocess.Popen(command, stdout=log_file, stderr=subprocess.STDOUT)
             process.wait()
-            print("Intro is ready.")
+            print("Intro is rendered.")
         except subprocess.CalledProcessError as e:
             print(f"Error occurred during ffmpeg execution: {e}")
             sys.exit()
