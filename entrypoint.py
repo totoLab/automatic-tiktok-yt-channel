@@ -18,7 +18,7 @@ def main(api_fetch_url, tmpFile, file_list_path, compilation_number, MANUAL=True
 
     m.blurring(file_list_path)
     
-    m.intro(compilation_number)
+    m.intro.generate_intro(category, compilation_number)
 
     m.join_to_final(file_list_path)
 
