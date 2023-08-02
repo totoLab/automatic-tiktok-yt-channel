@@ -6,8 +6,8 @@ from make_video import Dirs, Files
 
 from PIL import Image, ImageDraw, ImageFont
 
-def generate_intro(file_list_path, category, compilation_number):
-    image_path = generate_thumbnail(category, compilation_number)
+def generate_intro(file_list_path, font_path, category, compilation_number):
+    image_path = generate_thumbnail(category, compilation_number, font_path)
     music_path = os.path.join(Dirs.INTRO_TEMP, "intro_music.mp3")
     final_output = os.path.join(Dirs.INTRO_DIR, "intro_video.mp4")
 
@@ -28,25 +28,24 @@ def generate_intro(file_list_path, category, compilation_number):
     with open(file_list_path, "w") as file_list:
         file_list.write(f"file {final_output}\n")
 
-def generate_thumbnail(category, compilation_number):
+def generate_thumbnail(category, compilation_number, font_path):
     input_image_path = os.path.join(Dirs.INTRO_TEMP, f"{category}.png")
     output_image_path = os.path.join(Dirs.INTRO_DIR, f"{category}.png")
     text = f"#{compilation_number}"
-    text_config = text, (1195, 600), 85, (255, 255, 255), 3, (0, 0, 0)
+    text_config = text, (1195, 600), font_path, 85, (255, 255, 255), 3, (0, 0, 0)
 
     add_text_to_image(input_image_path, output_image_path, text_config)
     return output_image_path
 
 
 def add_text_to_image(input_image_path, output_image_path, text_config):
-    text, position, font_size, font_color, border_width, border_color = text_config
+    text, position, font_path, font_size, font_color, border_width, border_color = text_config
 
     # Open the image
     image = Image.open(input_image_path)
 
-    # Load the "opensans.ttf" font (replace 'opensans.ttf' with the path to the "opensans.ttf" font file)
-    font = ImageFont.truetype('opensans.ttf', font_size)
-    border_font = ImageFont.truetype('opensans.ttf', font_size + border_width)
+    font = ImageFont.truetype(font_path, font_size)
+    border_font = ImageFont.truetype(font_path, font_size + border_width)
     # Create a new ImageDraw object with the image as a parameter
     draw = ImageDraw.Draw(image)
 

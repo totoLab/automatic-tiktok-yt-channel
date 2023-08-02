@@ -4,7 +4,7 @@ import make_video as m
 import config as cfg
 #import upload_video
 
-def main(api_fetch_url, tmpFile, file_list_path, compilation_number, MANUAL=True, clean_up_toggle=False):
+def main(config, api_fetch_url, tmpFile, file_list_path, compilation_number, MANUAL=True, clean_up_toggle=False):
     if clean_up_toggle:
         m.clean_up(tmpFile)
 
@@ -14,7 +14,7 @@ def main(api_fetch_url, tmpFile, file_list_path, compilation_number, MANUAL=True
     m.save_response(response, tmpFile)
     urls = m.parse_response_from_file(tmpFile)
         
-    intro.generate_intro(file_list_path, category, compilation_number)
+    intro.generate_intro(file_list_path, config["font_path"], category, compilation_number)
 
     m.download_videos(urls)
 
@@ -36,7 +36,7 @@ if __name__ == "__main__":
         print(f"Not enough arguments, usage: {args[0]} [config path] [category of video]")
         sys.exit()
     config_path, category = args[1], args[2]
-    limit, tmpFile, url, compilation_number = cfg.update_compilation_db(config_path, category)
+    config, limit, tmpFile, url, compilation_number = cfg.update_compilation_db(config_path, category)
     api_fetch_url = f"{url}{limit}"
     file_list_path = os.path.join(m.Dirs.BUILD_DIR, "file_list.txt")
-    main(api_fetch_url, tmpFile, file_list_path, compilation_number, clean_up_toggle=True)
+    main(config, api_fetch_url, tmpFile, file_list_path, compilation_number, clean_up_toggle=True)

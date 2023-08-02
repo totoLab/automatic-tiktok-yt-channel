@@ -42,7 +42,7 @@ def update_compilation_db(db_path, category):
     with open(db_path, "w") as f:
         json.dump(d, f, indent=4)
 
-    return limit, tmpFile, url, compilation_number
+    return d, limit, tmpFile, url, compilation_number
 
 if __name__ == "__main__":
     update_compilation_db("service_files/config.json", "test")
