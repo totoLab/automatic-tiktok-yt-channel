@@ -2,3 +2,4 @@ build/
 service_files/
 __pycache__/
 logs/
+fast_clean.py
