@@ -58,4 +58,4 @@ def add_text_to_image(input_image_path, output_image_path, text_config):
     image.save(output_image_path)
 
 if __name__ == "__main__":
-    generate_intro(os.path.join(Dirs.BUILD_DIR, "file_list.txt"), "funny", 2190)
+    generate_intro(os.path.join(Dirs.BUILD_DIR, "file_list.txt"), "/usr/share/fonts/TTF/OpenSans-Bold.ttf", "cringe", 2)
