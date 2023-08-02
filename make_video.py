@@ -56,20 +56,36 @@ def parse_response_from_file(tmpFile):
         print(string)
     return urls
 
+
 def download_videos(urls, output_dir=Dirs.DOWNLOAD_DIR):
     with open(Files.LOG_FILE_D, "w") as log_file:
         for url in urls:
-            command = ["yt-dlp", "--output", os.path.join(output_dir, "%(title)s.%(ext)s"), url]
+            download_command = ["yt-dlp", "--output", os.path.join(output_dir, "%(title)s.%(ext)s"), url]
 
             try:
-                process = subprocess.Popen(command, stdout=log_file, stderr=subprocess.STDOUT)
+                # Download the video using yt-dlp
+                process = subprocess.Popen(download_command, stdout=log_file, stderr=subprocess.STDOUT)
                 process.wait()
                 print(f"Video downloaded: {url}")
             except subprocess.CalledProcessError as e:
                 print(f"Error occurred while downloading {url}: {e}")
                 sys.exit()
 
-    print("All videos downloaded successfully.")
+            # Get the downloaded video file path
+            video_file = os.path.join(output_dir, os.path.basename(url) + ".mp4")
+
+            # Reencode the video with the most compatible formats using ffmpeg
+            reencode_command = ["ffmpeg", "-i", video_file, "-c:v", "libx264", "-c:a", "aac", "-strict", "experimental", "-y", video_file]
+
+            try:
+                process = subprocess.Popen(reencode_command, stdout=log_file, stderr=subprocess.STDOUT)
+                process.wait()
+                print(f"Video reencoded: {url}")
+            except subprocess.CalledProcessError as e:
+                print(f"Error occurred while reencoding {url}: {e}")
+                sys.exit()
+
+    print("All videos downloaded and reencoded successfully.")
 
 def blurring(file_list_path):
     with open(Files.TITLES_FILE, "w") as titles:
@@ -109,7 +125,9 @@ def join_to_final(file_list_path):
     with open(Files.LOG_FILE_C, "w") as log_file:
         command = [
             "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", file_list_path,
-            "-vcodec", "copy", "-acodec", "copy", final_output
+            "-c:v", "copy",  # Copy the video codec as before
+            "-c:a", "copy",  # Use same audio codec
+            final_output
         ]
         try:
             process = subprocess.Popen(command, stdout=log_file, stderr=subprocess.STDOUT)
