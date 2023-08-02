@@ -10,6 +10,8 @@ class Dirs:
     BUILD_DIR = os.path.abspath("build")
     BLUR_DIR = os.path.abspath("build/blur")
     DOWNLOAD_DIR = os.path.abspath("build/raw_videos")
+    IMGS_DIR = os.path.abspath("build/imgs")
+    INTRO_DIR = os.path.abspath("build/intro")
     LOG_DIR = os.path.abspath("logs")
     SERVICE_DIR = os.path.abspath("service_files")
     

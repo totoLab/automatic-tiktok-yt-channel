@@ -1,4 +1,5 @@
 import sys, os
+import intro
 import make_video as m
 import config as cfg
 #import upload_video
@@ -17,11 +18,14 @@ def main(api_fetch_url, tmpFile, file_list_path, compilation_number, MANUAL=True
 
     m.blurring(file_list_path)
     
+    m.intro(compilation_number)
+
     m.join_to_final(file_list_path)
 
-    #gen.title(m.Files.TITLES_FILE)
     title = f"{category} tiktok compilation #{compilation_number}"
     print(f"Title: {title}")
+
+    
 
     if MANUAL:
         print("Now upload video to yt channel.")
