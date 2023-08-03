@@ -100,7 +100,10 @@ def blurring(file_list_path):
                     input_path = os.path.join(Dirs.DOWNLOAD_DIR, filename)
                     command = [
                         "ffmpeg", "-y", "-i", input_path,
-                        "-lavfi", "[0:v]scale=ih*16/9:-1,boxblur=luma_radius=min(h\,w)/20:luma_power=1:chroma_radius=min(cw\,ch)/20:chroma_power=1[bg];[bg][0:v]overlay=(W-w)/2:(H-h)/2,crop=h=iw*9/16",
+                        "-lavfi", "[0:v]fps=30,scale=ih*16/9:-1,boxblur=luma_radius=min(h\,w)/20:luma_power=1:chroma_radius=min(cw\,ch)/20:chroma_power=1[bg];[bg][0:v]overlay=(W-w)/2:(H-h)/2,crop=h=iw*9/16",
+                        "-c:v", "libx264",  # Video codec
+                        "-c:a", "aac",      # Audio codec
+                        "-strict", "experimental", "-b:a", "192k",  # Audio settings (you can adjust the bitrate if needed)
                         "-vb", "800K", output_path,
                     ]
                     try:
@@ -127,6 +130,7 @@ def join_to_final(file_list_path):
             "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", file_list_path,
             "-c:v", "copy",  # Copy the video codec as before
             "-c:a", "copy",  # Use same audio codec
+            "-strict", "experimental", "-b:a", "192k",
             final_output
         ]
         try:

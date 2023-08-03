@@ -13,8 +13,10 @@ def generate_intro(file_list_path, font_path, category, compilation_number):
 
     with open(Files.LOG_FILE_I, "w") as log_file:
         command = [
-            'ffmpeg', '-i', image_path, '-i', music_path,
-            '-c:v', 'libx264', '-c:a', 'aac', '-strict', 'experimental', '-b:a', '192k',
+            'ffmpeg', '-y', '-i', image_path, '-i', music_path,
+            "-vf", "fps=30",  # Set the frame rate to 30 fps (adjust as needed)
+            '-c:v', 'libx264', '-c:a', 'aac',
+            '-strict', 'experimental', '-b:a', '192k',
             final_output
         ]
         try:    
