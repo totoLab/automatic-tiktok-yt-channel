@@ -7,7 +7,9 @@
 - [x] extract verbose logging out of stdout 
 - [x] automate changing number in thumbnail
 - [x] add intro based on thumbnail at the start
-- [ ] extract hard-coded parameters as option in the start script
+- [x] extract hard-coded parameters as config files
+    - `config.json` for video editing
+    - `parameters.json` for video uploading
 - [ ] upload to yt
 
 ### Video generation

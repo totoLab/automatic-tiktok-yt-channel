@@ -1,109 +1,67 @@
-#!/usr/bin/python
-
+import sys
 import os
-import argparse
+import json
+import googleapiclient.discovery
+import googleapiclient.errors
 from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from googleapiclient.http import MediaFileUpload
 
-# Path to the Service Account JSON credentials
-SERVICE_ACCOUNT_FILE = os.path.abspath('service_files/service_account_credentials.json')
-
-# Scopes required for YouTube Data API
-SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
-API_SERVICE_NAME = 'youtube'
-API_VERSION = 'v3'
-
-VALID_PRIVACY_STATUSES = ('public', 'private', 'unlisted')
-
-MAX_RETRIES = 10
-RETRIABLE_ERROR_CODES = [500, 502, 503, 504]
-
-# Build the YouTube Data API client with Service Account credentials
-def get_authenticated_service():
+def initialize_youtube_client(credentials_file):
+    scopes = ["https://www.googleapis.com/auth/youtube.upload"]
     credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-    return build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
-
-def initialize_upload(youtube, options):
-    tags = None
-    if options.keywords:
-        tags = options.keywords.split(',')
-
-    body = dict(
-        snippet=dict(
-            title=options.title,
-            description=options.description,
-            tags=tags,
-            categoryId=options.category
-        ),
-        status=dict(
-            privacyStatus=options.privacyStatus
-        )
+        credentials_file, scopes=scopes
     )
+    youtube = googleapiclient.discovery.build("youtube", "v3", credentials=credentials)
+    return youtube
 
-    # Call the API's videos.insert method to create and upload the video.
+def upload_video(youtube, config):
+    video_file = config["video_file"]
+
+    request_body = {
+        "snippet": {
+            "title": config["title"],
+            "description": config["description"],
+            "tags": config["tags"],
+            "categoryId": config["category_id"]
+        },
+        "status": {
+            "privacyStatus": config["privacy"]
+        }
+    }
+
+    media_chunk_size = 1024 * 1024 * 256  # 256MB
     insert_request = youtube.videos().insert(
-        part=','.join(body.keys()),
-        body=body,
-        # The chunksize parameter specifies the size of each chunk of data, in bytes, that will be uploaded at a time. Set a higher value for reliable connections as fewer chunks lead to faster uploads.
-        # Set a lower value for better recovery on less reliable connections.
-        # Setting 'chunksize' equal to -1 in the code below means that the entire file will be uploaded in a single HTTP request. (If the upload fails, it will still be retried where it left off.)
-        # This is usually a best practice, but if you're using Python older than 2.6 or if you're running on App Engine, you should set the chunksize to something like 1024 * 1024 (1 megabyte).
-        media_body=MediaFileUpload(options.file, chunksize=-1, resumable=True)
+        part=",".join(request_body.keys()),
+        body=request_body,
+        media_body=video_file,
+        media_mime_type="video/mp4",
     )
 
-    resumable_upload(insert_request)
-
-# This method implements an exponential backoff strategy to resume a failed upload.
-def resumable_upload(request):
     response = None
-    error = None
-    retry = 0
-    while response is None:
-        try:
-            print('Uploading file...')
-            status, response = request.next_chunk()
-            if response is not None:
-                if 'id' in response:
-                    print('Video id "%s" was successfully uploaded.' % response['id'])
-                else:
-                    exit('The upload failed with an unexpected response: %s' % response)
-        except HttpError as e:
-            if e.resp.status in RETRIABLE_ERROR_CODES:
-                error = 'A retriable HTTP error %d occurred:\n%s' % (e.resp.status, e.content)
-            else:
-                raise
-        except Exception as e:
-            error = 'A retriable error occurred: %s' % e
-
-        if error is not None:
-            print(error)
-            retry += 1
-        if retry > MAX_RETRIES:
-            exit('No longer attempting to retry.')
-
-        max_sleep = 2 ** retry
-        sleep_seconds = random.random() * max_sleep
-        print('Sleeping %f seconds and then retrying...' % sleep_seconds)
-        time.sleep(sleep_seconds)
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--file', required=True, help='Video file to upload')
-    parser.add_argument('--title', help='Video title', default='Test Title')
-    parser.add_argument('--description', help='Video description', default='Test Description')
-    parser.add_argument('--category', default='22', help='Numeric video category. ' +
-                                                        'See https://developers.google.com/youtube/v3/docs/videoCategories/list')
-    parser.add_argument('--keywords', help='Video keywords, comma separated', default='')
-    parser.add_argument('--privacyStatus', choices=VALID_PRIVACY_STATUSES,
-                        default='private', help='Video privacy status.')
-    args = parser.parse_args()
-
-    youtube = get_authenticated_service()
-
     try:
-        initialize_upload(youtube, args)
-    except HttpError as e:
-        print('An HTTP error %d occurred:\n%s' % (e.resp.status, e.content))
+        response = insert_request.execute()
+        print("Video uploaded successfully!")
+        print("Video ID:", response["id"])
+        return response
+    except googleapiclient.errors.HttpError as e:
+        print("An HTTP error occurred:", e)
+    finally:
+        if response is None:
+            print("Video upload failed.")
+
+def main(config_file_path):
+    with open(config_file_path) as f:
+        config = json.load(f)
+
+        credentials_file = os.path.abspath(config["credentials_file"])
+
+        youtube = initialize_youtube_client(credentials_file)
+        upload_video(youtube, config)
+
+if __name__ == "__main__":
+    args = sys.argv
+    if len(args) < 2:
+        print("No config file path was passed as argument.")
+        sys.exit()
+    
+    config_file_path = args[1]
+    main(config_file_path)

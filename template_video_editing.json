@@ -1,0 +1,12 @@
+{
+    "limit": 8,
+    "tmpFile": "service_files/tmpFile.json",
+    "font_path": "/usr/share/fonts/TTF/OpenSans-Bold.ttf",
+    "thumbnails": "path/to/images",
+    "compilations": {
+        "cringe": {
+            "url": "https://url.to.resource",
+            "number": 0
+        }
+    }
+}

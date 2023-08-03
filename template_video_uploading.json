@@ -1,0 +1,9 @@
+{
+    "credentials_file": "service_files/service_account_credentials.json",
+    "video_file": "path/to/video_file",
+    "title": "title",
+    "description": "description",
+    "tags": ["tag1", "tag2", "tag3"],
+    "privacy": "public",
+    "category_id": "22"
+}

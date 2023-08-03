@@ -1,1 +1,1 @@
-python3 upload_video.py --file "file.mp4"
+python3 upload_video.py service_files/parameters.json
